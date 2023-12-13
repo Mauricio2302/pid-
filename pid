@@ -1,0 +1,274 @@
+
+
+
+int sensors[]{5,6,7};
+int colorD, colorE, colorM;
+int black = 1;
+int white = 0;
+//DIREITA == 5, MEIO == 6, ESQUERDA == 7;
+int trig = 2;
+int echo = 3;
+int distance;
+int timer;
+int motors[]{12,13,11,8,9,10};
+int velR;
+int velL;
+int vell = 60;
+int Kp = 15;
+int Ki;
+int Kd = 35;
+int error;
+int lasterror;
+int P;
+int I;
+int D;
+int PID;
+void setup() {
+  Serial.begin(9600);
+  for(int i = 0; i < 3; i++){
+    pinMode(sensors[i], INPUT);
+  }
+  for(int i = 0; i < 6; i++){
+    pinMode(motors[i], OUTPUT);
+  }
+  pinMode(trig, OUTPUT);
+  pinMode(echo, INPUT);
+}
+void loop() {
+ /* if(linhaM()){
+    frente();
+  }
+  if(noline()){
+    frente();
+  }
+  if(linhaE()){
+     digitalWrite(motors[0], HIGH);
+     digitalWrite(motors[1], LOW);
+     analogWrite(motors[2], -45);
+     digitalWrite(motors[3],LOW);
+     digitalWrite(motors[4],HIGH);
+     analogWrite(motors[5], 255);
+     delay(150);
+  }
+  if(linhaE90()){
+     digitalWrite(motors[0], HIGH);
+     digitalWrite(motors[1], LOW);
+     analogWrite(motors[2], -45);
+     digitalWrite(motors[3],LOW);
+     digitalWrite(motors[4],HIGH);
+     analogWrite(motors[5], 255);
+          delay(150);
+  }
+  if(linhaD()){
+     digitalWrite(motors[0], LOW);
+     digitalWrite(motors[1], HIGH);
+     analogWrite(motors[2], 255);
+     digitalWrite(motors[3],HIGH);
+     digitalWrite(motors[4],LOW);
+     analogWrite(motors[5], -45);
+          delay(150);
+  }
+  if(linhaD90()){
+     digitalWrite(motors[0], LOW);
+     digitalWrite(motors[1], HIGH);
+     analogWrite(motors[2], 255);
+     digitalWrite(motors[3],HIGH);
+     digitalWrite(motors[4],LOW);
+     analogWrite(motors[5], -45);
+          delay(150);
+  }
+  if (distance<=4 && distance>=2 ){
+       desviar();
+   }*/
+  
+  
+  colorD = digitalRead(sensors[0]);
+  colorM = digitalRead(sensors[1]);
+  colorE = digitalRead(sensors[2]);
+  digitalWrite(trig, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trig, LOW);
+  timer = pulseIn(echo, HIGH);
+  distance = timer / 29.4 / 2;
+  //Serial.println(colorE);
+ // Serial.println(colorD);
+  //Serial.println(colorM);*/
+  //Serial.println(distance);
+
+       followLine();
+
+} 
+
+void frente(){
+  digitalWrite(motors[0], LOW);
+  digitalWrite(motors[1], HIGH);
+  analogWrite(motors[2], vell);
+  digitalWrite(motors[3],LOW);
+  digitalWrite(motors[4],HIGH);
+  analogWrite(motors[5], vell);
+}
+void direita(){
+  digitalWrite(motors[0], LOW);
+  digitalWrite(motors[1], HIGH);
+  analogWrite(motors[2], vell);
+  digitalWrite(motors[3],LOW);
+  digitalWrite(motors[4],LOW);
+  analogWrite(motors[5], -vell);
+}
+void esquerda(){
+  digitalWrite(motors[0], LOW);
+  digitalWrite(motors[1], LOW);
+  analogWrite(motors[2], -vell);
+  digitalWrite(motors[3],LOW);
+  digitalWrite(motors[4],HIGH);
+  analogWrite(motors[5], vell);
+}
+void tras(){
+  digitalWrite(motors[0], HIGH);
+  digitalWrite(motors[1], LOW);
+  analogWrite(motors[2], vell * 0.8);
+  digitalWrite(motors[3],HIGH);
+  digitalWrite(motors[4],LOW);
+  analogWrite(motors[5], vell * 0.8);
+}
+void alinhar(){
+  digitalWrite(motors[0], HIGH);
+  digitalWrite(motors[1], LOW);
+  analogWrite(motors[2], vell * 0.65);
+  digitalWrite(motors[3],HIGH);
+  digitalWrite(motors[4],LOW);
+  analogWrite(motors[5], vell * 0.65);
+}
+void parar(){
+  digitalWrite(motors[0], LOW);
+  digitalWrite(motors[1], LOW);
+  analogWrite(motors[2], 0);
+  digitalWrite(motors[3],LOW);
+  digitalWrite(motors[4],LOW);
+  analogWrite(motors[5], 0);
+}
+
+bool linhaM(){
+  if(colorE == 0 && colorM == 1 && colorD == 0 ){
+    return true;
+  }
+  else{
+   return false;
+  }
+}
+bool noline(){
+  if(colorE == 0 && colorM == 0 && colorD == 0){
+    return true;
+  }
+  else{
+   return false;
+  }
+}
+bool linhaE(){
+  if(colorE == 1 && colorM == 0 && colorD == 0){
+    return true;
+  }
+  else{
+   return false;
+  }
+}
+bool linhaD(){
+  if(colorE == 0 && colorM == 0 && colorD == 1){
+    return true;
+  }
+  else{
+   return false;
+  }
+}
+bool linhaD90(){
+  if(colorE == 0 && colorM == 1 && colorD == 1){
+    return true;
+  }
+  else{
+   return false;
+  }
+}
+bool linhaE90(){
+  if(colorE == 1 && colorM == 1 && colorD == 0){
+    return true;
+  }
+  else{
+   return false;
+  }
+}
+
+void desviar(){
+      tras();
+      delay(450);
+      esquerda();
+      delay(800);
+      tras();
+      delay(150);
+      frente();
+      delay(300);
+     digitalWrite(motors[0], LOW);
+     digitalWrite(motors[1], HIGH);
+     analogWrite(motors[2], 250);
+     digitalWrite(motors[3],LOW);
+     digitalWrite(motors[4],HIGH);
+     analogWrite(motors[5], 35);
+     delay(1700);
+      esquerda();
+      delay(920);
+      alinhar();
+      delay(400);
+  }
+  void desviar_arthur(){
+       tras();
+       delay(1000);
+       direita();
+       delay(2000);
+       esquerda();
+       delay(500);
+       frente();
+    }
+
+  void calc_error(){
+   if(linhaE90()){
+     error = -2.35;
+     }
+     else if(linhaE()){
+      error = -2;
+    }
+    else if(linhaD90()){
+      error = 2.35;
+    }
+    else if(linhaD()){
+      error = 2;
+    }
+    else if(linhaM){
+      error = 0;
+   }
+  }
+  void followLine(){
+    calc_error();
+    P = Kp*error;
+    if(error > 1){
+    digitalWrite(motors[0], LOW);
+    digitalWrite(motors[1], HIGH);
+    analogWrite(motors[2], vell+ 30 +P );
+    digitalWrite(motors[3],HIGH);
+    digitalWrite(motors[4],LOW);
+    analogWrite(motors[5], vell + 60 -P);
+    Serial.println(vell-P);
+    }
+    if(error < -1){
+    digitalWrite(motors[0], HIGH);
+    digitalWrite(motors[1], LOW);
+    analogWrite(motors[2], vell + 60 +P);
+    digitalWrite(motors[3],LOW);
+    digitalWrite(motors[4],HIGH);
+    analogWrite(motors[5], vell + 30 -P);
+    Serial.println(vell-P);
+    }
+    if(error == 0){ 
+      frente();
+    }
+  }
+   /*
+*/
