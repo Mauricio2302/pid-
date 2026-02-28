@@ -12,7 +12,7 @@ int colorRM;
 int colorLM;
 int colorL;
 int P;
-int Kp = 30;
+int Kp = 80;
 int error;
 void setup() {
   // put your setup code here, to run once:
@@ -26,6 +26,7 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+
   followLine();
 }
 
@@ -62,16 +63,28 @@ void readLine(){
     error = 0;
   }
   else if (linha == "6611") {
-    error = 2.5;
+    error = 1.25;
+  }
+  else if (linha == "6111") {
+    error = 1.25;
+  }
+  else if (linha == "6616") {
+    error = 0;
   }
   else if (linha == "6661") {
-    error = 4;
+    error = 1.5;
   }
   else if (linha == "1166") {
-    error = -2.5;
+    error = -1.25;
+  }
+  else if (linha == "6166") {
+    error = 0;
+  }
+  else if (linha == "1116") {
+    error = -1.25;
   }
   else if (linha == "1666") {
-    error = -4;
+    error = -1.5;
   }
 }
 String getLine() {
@@ -100,17 +113,11 @@ void followLine(){
     readLine();
   }
   else{
-    analogWrite(IN1, 90);
+    analogWrite(IN1, 100);
     analogWrite(IN2, 0);
-    analogWrite(IN3, 90);
+    analogWrite(IN3, 100);
     analogWrite(IN4, 0);
     readLine();
   }
 
 }
-
-
-
-
-
-
